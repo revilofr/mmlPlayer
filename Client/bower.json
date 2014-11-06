@@ -1,0 +1,21 @@
+{
+  "name": "mmlPlayer",
+  "version": "0.0.0",
+  "description": "A mml player using timbre.js",
+  "main": "index.html",
+  "authors": [
+    "olivier.abrard"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "timbre": "*",
+    "jquery": "~2.1.1"
+  }
+}

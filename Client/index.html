@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MML Player</title>
+    <link rel="stylesheet" href="./bower_components/timbre/misc/css/codemirror.css" type="text/css">
+    <link rel="stylesheet" href="./bower_components/timbre/misc/css/common.css" type="text/css">
+    <!--<link rel="shortcut icon" href="./timbre.js/favicon.ico">-->
+    <script src="./bower_components/timbre/timbre.dev.js"></script>
+    <script src="./bower_components/jquery/dist/jquery.js"></script>
+</head>
+<body>
+
+<div id="main"><h1 id="recording-mode">MML Player</h1>
+
+    <p>Let's give a try !</p>
+
+    <div class="editor">
+        <div class="player_status" id="player_status">Waiting for a song...</div>
+        <textarea id="input" style="display: block;" title="Your mml partition"></textarea>
+        <button id="play_button" class="play-button" onclick="play()">Play</button>
+    </div>
+</div>
+<script>
+    var playerStatus = "ended";
+    //var gen = T("OscGen", {wave: "sin(10)", env: {type: "adsr"}, mul: 0.2});
+    var gen = T("PluckGen", {env:{type:"perc", r:500, lv:0.4}});
+    var playBtn = $('#play_button');
+
+    function play() {
+
+        var mmlPartition = $('#input').val();
+
+        switch(playerStatus) {
+            case "play":
+                _pause();
+                break;
+            case "pause":
+                _resume();
+                break;
+            case "ended":
+                _play(mmlPartition);
+                break;
+            default:
+                    console.log('Unexpected playerStatus : ' + playerStatus);
+        }
+    }
+
+    function _pause() {
+        gen.pause();
+    }
+
+    function _play(mmlPartition) {
+        playBtn.html('Pause');
+        var player = T("mml", {mml: mmlPartition}, gen);
+
+        //Subscribtions to every events
+        gen.on('ended', function () {
+            playBtn.html('Play');
+            _displayStatus('ended');
+            gen.stop();
+        });
+
+        gen.on('pause', function () {
+            _displayStatus('pause');
+            playBtn.html('Resume');
+        });
+
+        gen.on('ar', function () {
+            _displayStatus('ar');
+            //audio rate?
+        });
+
+        gen.on('play', function () {
+            _displayStatus('play');
+        });
+
+        gen.on('done', function(){
+            _displayStatus('done');
+        });
+
+        gen.on('released', function(){
+            _displayStatus('released');
+        });
+
+        gen.on('bang', function(){
+            _displayStatus('bang');
+        });
+
+        gen.on('init', function(){
+            _displayStatus('init');
+        });
+        gen.on('start', function(){
+            _displayStatus('start');
+        });
+
+        player.start();
+        gen.play(mmlPartition);
+    }
+
+    function _resume(){
+        gen.play();
+    }
+
+    function _displayStatus(status){
+        playerStatus = status;
+        console.log("New Status : " + status);
+        $('#player_status').html(status);
+    }
+
+    function _displayButton(status){
+
+    }
+
+</script>
+</body>
+</html>
